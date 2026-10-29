@@ -803,6 +803,56 @@ def build_app(projects_root: Path, api_key_default: str = ""):
         except KeyError:
             raise HTTPException(404, "项目不存在") from None
 
+    # ---------- 模型档案 CRUD（全局 profiles.toml） ----------
+    @app.post("/api/profiles")
+    async def create_profile(body: dict):
+        from ..config import keys_path, profiles_path
+        from ..config.models import Profile
+        from ..config.profile_store import ProfileStore
+        store = ProfileStore(profiles_path(), keys_path())
+        pid = str(body.get("id") or "").strip()
+        if not pid:
+            raise HTTPException(400, "档案 id 不能为空")
+        profile = Profile.from_dict(pid, body)
+        store.save_profile(profile)
+        return {"ok": True, "id": pid}
+
+    @app.put("/api/profiles/{pid}")
+    async def update_profile(pid: str, body: dict):
+        from ..config import keys_path, profiles_path
+        from ..config.models import Profile
+        from ..config.profile_store import ProfileStore
+        store = ProfileStore(profiles_path(), keys_path())
+        profile = Profile.from_dict(pid, body)
+        store.save_profile(profile)
+        return {"ok": True, "id": pid}
+
+    @app.delete("/api/profiles/{pid}")
+    async def delete_profile(pid: str):
+        from ..config import keys_path, profiles_path
+        from ..config.profile_store import ProfileStore
+        store = ProfileStore(profiles_path(), keys_path())
+        if not store.delete_profile(pid):
+            raise HTTPException(404, f"档案不存在: {pid}")
+        return {"ok": True}
+
+    @app.put("/api/roles")
+    async def save_roles(body: dict[str, str]):
+        from ..config import keys_path, profiles_path
+        from ..config.profile_store import ProfileStore
+        store = ProfileStore(profiles_path(), keys_path())
+        store.save_roles(body)
+        return {"ok": True}
+
+    @app.put("/api/budget")
+    async def save_budget(body: dict):
+        from ..config import keys_path, profiles_path
+        from ..config.models import Budget
+        from ..config.profile_store import ProfileStore
+        store = ProfileStore(profiles_path(), keys_path())
+        store.save_budget(Budget.from_dict(body))
+        return {"ok": True}
+
     # ---------- 书页预览（随翻随排版） ----------
     @app.get("/api/project/{pid}/preview/{lang}")
     async def preview(pid: str, lang: str):

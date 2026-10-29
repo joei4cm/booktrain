@@ -57,6 +57,20 @@ export const api = {
     request<{ profiles: Settings["profiles"]; roles: Settings["roles"] }>(
       "/api/profiles",
     ),
+  createProfile: (body: Record<string, unknown>) =>
+    post<{ ok: boolean; id: string }>("/api/profiles", body),
+  updateProfile: (pid: string, body: Record<string, unknown>) =>
+    request<{ ok: boolean }>(`/api/profiles/${encodeURIComponent(pid)}`, {
+      method: "PUT", body: JSON.stringify(body),
+    }),
+  deleteProfile: (pid: string) =>
+    request<{ ok: boolean }>(`/api/profiles/${encodeURIComponent(pid)}`, {
+      method: "DELETE",
+    }),
+  saveRoles: (roles: Record<string, string>) =>
+    request<{ ok: boolean }>("/api/roles", { method: "PUT", body: JSON.stringify(roles) }),
+  saveBudget: (budget: { max_cost: number; max_tokens: number }) =>
+    request<{ ok: boolean }>("/api/budget", { method: "PUT", body: JSON.stringify(budget) }),
 
   translate: (id: string, body: Record<string, unknown> = {}) =>
     post<{ ok: boolean; message?: string }>(`/api/project/${id}/translate`, body),

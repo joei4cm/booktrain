@@ -353,6 +353,9 @@ export default function App() {
               profiles={profiles}
               roles={roles}
               budget={budget}
+              onChanged={() => {
+                void api.profiles().then((d) => { setProfiles(d.profiles); setRoles(d.roles); });
+              }}
               onSave={async (body) => {
                 if (!project) return;
                 await api.saveSettings(project.id, body);

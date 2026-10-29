@@ -115,8 +115,19 @@ export interface Profile {
   caps: string[];
   price_in: number | null;
   price_out: number | null;
+  price_cache_read: number | null;
   key_env: string;
   key_state: string;
+  api_key: string;
+  api_keys: string[];
+  concurrency: number;
+  rpm: number;
+  max_output_tokens: number;
+  temperature: number | null;
+  timeout: number;
+  max_retries: number;
+  prompt_preset: string;
+  explicit: string[];
 }
 
 export interface RoleSpec {

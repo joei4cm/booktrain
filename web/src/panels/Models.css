@@ -124,3 +124,67 @@
   gap: var(--s2);
   padding-top: var(--s3);
 }
+
+/* 操作行 */
+.models-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.models-row-actions {
+  display: flex;
+  gap: var(--s1);
+  align-items: center;
+}
+
+.models-confirm {
+  display: inline-flex;
+  gap: var(--s1);
+  align-items: center;
+}
+
+/* 档案编辑弹窗 */
+.pf-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 22, 26, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.pf-modal {
+  background: var(--surface);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-paper);
+  padding: var(--s5);
+  width: min(560px, 92vw);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.pf-modal h3 {
+  margin: 0 0 var(--s4);
+  font-size: var(--text-md);
+}
+
+.pf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s3);
+}
+
+.pf-grid .field {
+  margin: 0;
+}
+
+.pf-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s2);
+  margin-top: var(--s4);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--line);
+}
