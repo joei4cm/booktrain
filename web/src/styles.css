@@ -1,4 +1,4 @@
-/* 应用外壳布局（面板内部样式各自独立）。 */
+/* ── 应用外壳布局 ── */
 
 .app {
   display: grid;
@@ -7,40 +7,54 @@
   min-height: 0;
 }
 
+/* ── 顶栏 ── */
 .topbar {
   display: flex;
   align-items: center;
   gap: var(--s2);
-  padding: var(--s2) var(--s3);
-  border-bottom: 1px solid var(--line);
-  background: var(--desk);
+  padding: 0 var(--s3);
+  height: 42px;
+  background: var(--ink);
+  color: var(--paper);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .topbar h1 {
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   margin: 0;
   font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--paper);
 }
 
-.topbar .grow {
-  flex: 1;
-}
+.topbar .grow { flex: 1; }
 
+.topbar button {
+  background: transparent;
+  border-color: rgba(255,255,255,.18);
+  color: var(--paper);
+  font-size: var(--text-sm);
+}
+.topbar button:hover:not(:disabled) { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.3); }
+.topbar button.primary { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.topbar button.primary:hover { background: #e8e6e1; }
+.topbar button:disabled { opacity: .4; }
+
+/* ── 主体 ── */
 .body {
   display: grid;
-  grid-template-columns: 68px minmax(0, 1fr);
+  grid-template-columns: 64px minmax(0, 1fr);
   min-height: 0;
 }
 
+/* ── 左侧导航轨 ── */
 .nav {
-  border-right: 1px solid var(--line);
-  background: var(--desk);
+  background: var(--ink);
   display: flex;
   flex-direction: column;
-  gap: var(--s1);
+  gap: 2px;
   padding: var(--s2) 0;
 }
 
@@ -48,16 +62,21 @@
   border: none;
   background: none;
   border-radius: 0;
-  padding: var(--s2) var(--s1);
+  padding: var(--s2) 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  color: var(--ink-3);
-  font-size: var(--text-xs);
+  gap: 3px;
+  color: rgba(255,255,255,.5);
+  font-size: 10px;
   line-height: 1.2;
+  cursor: pointer;
 }
-
+.nav button:hover { color: rgba(255,255,255,.8); background: rgba(255,255,255,.06); }
+.nav button[aria-current="page"] {
+  color: var(--paper);
+  background: rgba(255,255,255,.1);
+}
 .nav button svg {
   width: 18px;
   height: 18px;
@@ -66,35 +85,32 @@
   stroke-width: 1.6;
 }
 
-.nav button[aria-current="page"] {
-  color: var(--accent);
-  background: var(--accent-soft);
-  box-shadow: inset 2px 0 0 var(--accent);
-}
-
+/* ── 主区 ── */
 .main {
   min-height: 0;
   overflow: auto;
   padding: var(--s4);
 }
 
+/* ── 常驻作业条 ── */
 .jobbar {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;          /* 窄屏换行，别把整页撑出横向滚动条 */
+  flex-wrap: wrap;
   gap: var(--s3);
-  min-width: 0;
-  padding: var(--s2) var(--s3);
-  border-top: 1px solid var(--line);
-  background: var(--surface);
+  padding: 0 var(--s3);
+  height: 36px;
+  background: var(--ink);
+  color: rgba(255,255,255,.7);
   font-size: var(--text-sm);
+  border-top: 1px solid rgba(255,255,255,.08);
 }
 
 .jobbar .bar {
-  width: 180px;
-  height: 4px;
+  width: 160px;
+  height: 3px;
   border-radius: 2px;
-  background: var(--line);
+  background: rgba(255,255,255,.15);
   overflow: hidden;
 }
 
@@ -105,32 +121,61 @@
   transition: width var(--t-panel) var(--ease);
 }
 
-@media (max-width: 860px) {
-  .body {
-    grid-template-columns: 1fr;
-  }
+.jobbar .tag { border-color: rgba(255,255,255,.15); color: rgba(255,255,255,.7); background: rgba(255,255,255,.08); }
+.jobbar .tag.ok { color: #6ee7a0; border-color: rgba(110,231,160,.25); background: rgba(110,231,160,.08); }
+.jobbar .num { color: var(--paper); font-weight: 600; }
 
-  .nav {
-    flex-direction: row;
-    border-right: none;
-    border-bottom: 1px solid var(--line);
-    padding: 0;
-  }
-
-  .nav button {
-    flex: 1;
-  }
+/* ── 设置弹出层 ── */
+.settings-pop {
+  position: absolute;
+  top: 42px;
+  right: var(--s3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-paper);
+  padding: var(--s3);
+  z-index: 40;
+  min-width: 200px;
+  color: var(--ink);
 }
 
-/* 命令面板 */
+.settings-pop__section { margin-bottom: var(--s3); }
+.settings-pop__section:last-child { margin-bottom: 0; }
+
+.settings-pop h4 {
+  margin: 0 0 var(--s1);
+  font-size: var(--text-xs);
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.settings-pop__row { display: flex; gap: var(--s1); }
+
+/* ── 轻提示 ── */
+.toast {
+  position: fixed;
+  right: var(--s4);
+  bottom: 48px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: var(--s2) var(--s4);
+  border-radius: var(--r-panel);
+  font-size: var(--text-sm);
+  max-width: 60vw;
+  z-index: 60;
+}
+
+/* ── 命令面板 ── */
 .palette-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(20, 22, 26, 0.35);
+  background: rgba(28,31,38,.5);
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 12vh;
+  padding-top: 14vh;
   z-index: 50;
 }
 
@@ -149,76 +194,22 @@
   border-radius: 0;
   padding: var(--s3);
   font-size: var(--text-md);
+  background: var(--paper);
 }
 
-.palette-list {
-  list-style: none;
-  margin: 0;
-  padding: var(--s1);
-  max-height: 320px;
-  overflow: auto;
-}
-
+.palette-list { list-style: none; margin: 0; padding: var(--s1); max-height: 320px; overflow: auto; }
 .palette-list button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  border: none;
-  background: none;
+  display: block; width: 100%; text-align: left;
+  border: none; background: none;
   padding: var(--s2) var(--s3);
   border-radius: var(--r-control);
 }
+.palette-list button.on { background: var(--accent-soft); color: var(--accent-strong); font-weight: 500; }
+.palette-list .muted { padding: var(--s2) var(--s3); }
 
-.palette-list button.on {
-  background: var(--accent-soft);
-  color: var(--accent-strong);
-}
-
-/* 轻提示 */
-.toast {
-  position: fixed;
-  right: var(--s4);
-  bottom: 56px;
-  background: var(--ink);
-  color: #fff;
-  padding: var(--s2) var(--s4);
-  border-radius: var(--r-panel);
-  font-size: var(--text-sm);
-  max-width: 60vw;
-  z-index: 60;
-}
-
-/* 设置弹出层 */
-.settings-pop {
-  position: absolute;
-  top: 44px;
-  right: var(--s3);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-panel);
-  box-shadow: var(--shadow-paper);
-  padding: var(--s3);
-  z-index: 40;
-  min-width: 200px;
-}
-
-.settings-pop__section {
-  margin-bottom: var(--s3);
-}
-
-.settings-pop__section:last-child {
-  margin-bottom: 0;
-}
-
-.settings-pop h4 {
-  margin: 0 0 var(--s1);
-  font-size: var(--text-xs);
-  color: var(--ink-3);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.settings-pop__row {
-  display: flex;
-  gap: var(--s1);
+/* ── 响应式 ── */
+@media (max-width: 860px) {
+  .body { grid-template-columns: 1fr; }
+  .nav { flex-direction: row; border-bottom: 1px solid rgba(255,255,255,.1); padding: 0; }
+  .nav button { flex: 1; }
 }

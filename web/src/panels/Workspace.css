@@ -1,53 +1,64 @@
-/* 工作台三栏：目录/阶段 | 活页 | 校对 */
+/* ── 工作台三栏：校样稿纸 ── */
 
 .ws {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr) 340px;
+  grid-template-columns: 220px minmax(0, 1fr) 300px;
   gap: var(--s3);
-  height: calc(100vh - 190px);
-  min-height: 420px;
+  height: calc(100vh - 140px);
+  min-height: 400px;
 }
 
-.ws-left,
-.ws-right {
+/* ── 左栏：章节 + 阶段 ── */
+.ws-left {
   padding: var(--s3);
   overflow: auto;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
 }
 
 .ws-left h2 {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--ink-3);
   margin: var(--s3) 0 var(--s1);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: .04em;
+  font-weight: 600;
 }
 
-.ws-left h2:first-child {
-  margin-top: 0;
-}
+.ws-left h2:first-child { margin-top: 0; }
 
-.ws-docs,
-.ws-stages {
+.ws-docs, .ws-stages {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.ws-docs li,
-.ws-stages li {
+.ws-docs li, .ws-stages li {
   display: flex;
   align-items: center;
   gap: var(--s2);
-  padding: 3px 0;
+  padding: 4px 0;
   font-size: var(--text-sm);
   border-bottom: 1px solid var(--line);
 }
 
-.ws-docs li:last-child,
-.ws-stages li:last-child {
-  border-bottom: none;
+.ws-docs li:last-child, .ws-stages li:last-child { border-bottom: none; }
+
+.ws-stages li button {
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 2px 0;
+  flex: 1;
+  font-size: var(--text-sm);
 }
 
+.ws-stages li button[aria-current="true"] {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── 中栏：书页 ── */
 .ws-center {
   display: flex;
   flex-direction: column;
@@ -58,68 +69,71 @@
 .tabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 2px solid var(--ink);
 }
 
 .tabs button {
   border: none;
   background: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: none;
   border-radius: 0;
-  padding: var(--s1) var(--s3);
+  padding: var(--s2) var(--s3);
   color: var(--ink-3);
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 .tabs button.on {
-  border-bottom-color: var(--accent);
   color: var(--ink);
   font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: -2px;
 }
 
 .ws-sheet {
   flex: 1;
   width: 100%;
-  border: 1px solid var(--line);
-  border-radius: var(--r-panel);
-  background: #eceef0;
-  box-shadow: var(--shadow-panel);
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  box-shadow: var(--shadow-paper);
+  border-radius: 0;
 }
 
 .ws-segments {
   flex: 1;
   overflow: auto;
-  padding: var(--s2);
+  padding: var(--s3);
+  background: var(--surface);
+  border: 1px solid var(--line);
 }
 
 .ws-segments textarea {
   width: 100%;
   min-height: 48px;
   resize: vertical;
+  font-family: var(--font-book);
+  font-size: var(--text-sm);
+  line-height: 1.8;
 }
 
-@media (max-width: 1240px) {
-  .ws {
-    grid-template-columns: 200px minmax(0, 1fr);
-  }
+/* ── 右栏：校对 ── */
+.ws-right {
+  padding: var(--s3);
+  overflow: auto;
+  border-left: 1px solid var(--line);
+  background: var(--surface);
+}
 
-  .ws-right {
-    grid-column: 1 / -1;
-    max-height: 320px;
-  }
+/* ── 响应式 ── */
+@media (max-width: 1240px) {
+  .ws { grid-template-columns: 200px minmax(0, 1fr); }
+  .ws-right { grid-column: 1 / -1; max-height: 300px; border-left: none; border-top: 1px solid var(--line); }
 }
 
 @media (max-width: 860px) {
-  .ws {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-
-  .ws-left,
-  .ws-right {
-    max-height: 260px;
-  }
-
-  .ws-sheet {
-    height: 70vh;
-  }
+  .ws { grid-template-columns: 1fr; height: auto; }
+  .ws-left { max-height: 200px; border-right: none; border-bottom: 1px solid var(--line); }
+  .ws-sheet { height: 60vh; }
 }
