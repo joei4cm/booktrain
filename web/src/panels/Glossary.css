@@ -1,0 +1,251 @@
+/* 术语与背景面板样式：颜色/字号/间距/圆角/动效一律取自 tokens.css，不硬编码任何色值。 */
+
+.gl {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s5);
+  padding: var(--s4);
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------- 头部与状态 */
+
+.gl-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--surface);
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid var(--line);
+}
+
+.gl-head-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.gl-head-spacer {
+  flex: 1 1 auto;
+}
+
+.gl-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.gl-sub {
+  margin: var(--s2) 0 0;
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+.gl-status {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex-wrap: wrap;
+  margin: var(--s2) 0 0;
+  font-size: var(--text-sm);
+}
+
+.gl-notice {
+  color: var(--ink-3);
+}
+
+.gl-error,
+.gl-conflict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+  margin: var(--s2) 0 0;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--danger);
+  border-radius: var(--r-control);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: var(--text-sm);
+}
+
+.gl-conflict {
+  border-color: var(--warn);
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+/* ---------------------------------------------------------------- 分区 */
+
+.gl-section {
+  border-top: 1px solid var(--line);
+  padding-top: var(--s4);
+  min-width: 0;
+}
+
+.gl-section-title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.gl-hint {
+  margin: var(--s1) 0 var(--s3);
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+}
+
+.gl-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex-wrap: wrap;
+}
+
+.gl-toolbar {
+  margin-top: var(--s2);
+}
+
+/* ---------------------------------------------------------------- 术语表 */
+
+.gl-langs {
+  max-width: 460px;
+}
+
+.gl-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+}
+
+.gl-table th,
+.gl-table td {
+  padding: var(--s1) var(--s2);
+  vertical-align: middle;
+}
+
+.gl-table td input[type="text"] {
+  width: 100%;
+}
+
+.gl-col-src {
+  min-width: 150px;
+}
+
+.gl-col-dst {
+  min-width: 130px;
+}
+
+.gl-col-lang {
+  min-width: 130px;
+}
+
+.gl-col-note {
+  min-width: 170px;
+}
+
+.gl-src {
+  font-weight: 500;
+}
+
+.gl-lang-label {
+  display: block;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.gl-lang-code {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+/* ---------------------------------------------------------------- 禁翻表 */
+
+.gl-nt-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.gl-nt-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.gl-nt-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------- 表单 */
+
+.gl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--s3) var(--s4);
+}
+
+.gl-span {
+  grid-column: 1 / -1;
+}
+
+.gl-textarea {
+  width: 100%;
+  min-height: 76px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.gl-textarea-tall {
+  min-height: 140px;
+}
+
+/* ---------------------------------------------------------------- 空状态 */
+
+.gl-empty {
+  padding: var(--s5) var(--s4);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-panel);
+  background: var(--surface);
+}
+
+.gl-empty-lead {
+  margin: 0;
+  font-weight: 600;
+}
+
+.gl-empty ol {
+  margin: var(--s2) 0 var(--s4);
+  padding-left: var(--s5);
+  color: var(--ink-2);
+}
+
+.gl-empty li {
+  margin-bottom: var(--s1);
+}
+
+/* ---------------------------------------------------------------- 只给读屏 */
+
+.gl-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gl-table-wrap {
+    scroll-behavior: auto;
+  }
+}

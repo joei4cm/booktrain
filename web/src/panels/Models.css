@@ -1,0 +1,126 @@
+/* 模型面板样式。颜色一律取自 tokens.css（唯一令牌来源），不硬编码色值。 */
+
+.models {
+  padding: var(--s5);
+  display: grid;
+  gap: var(--s6);
+}
+
+.models-head {
+  display: grid;
+  gap: var(--s1);
+}
+
+.models-head h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.models .models-lead {
+  margin: 0;
+}
+
+.models-block {
+  display: grid;
+  gap: var(--s2);
+  border-top: 1px solid var(--line);
+  padding-top: var(--s4);
+}
+
+.models-block__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  flex-wrap: wrap;
+}
+
+.models-block__head h3 {
+  margin: 0;
+  font-size: var(--text-md);
+}
+
+.models-count {
+  font-size: var(--text-sm);
+}
+
+/* 表格可横向滚动，窄屏不撑破布局 */
+.models-table-wrap {
+  overflow-x: auto;
+}
+
+.models-caption {
+  caption-side: top;
+  text-align: left;
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+  padding-bottom: var(--s1);
+}
+
+.models-name {
+  font-weight: 600;
+}
+
+.models-sub {
+  font-size: var(--text-xs);
+}
+
+/* 行首表头：角色名当 label 绑到右侧 select 上 */
+.models-rowhead {
+  background: var(--surface);
+}
+
+.models-rowhead label {
+  color: var(--ink);
+  font-size: var(--text-base);
+  cursor: pointer;
+}
+
+.models-rowhead .models-sub {
+  font-weight: 400;
+}
+
+.models td select {
+  max-width: 100%;
+}
+
+.models-empty {
+  margin: 0;
+  color: var(--ink-3);
+}
+
+.models-msg {
+  margin: var(--s1) 0 0;
+  font-size: var(--text-sm);
+}
+
+.models-msg.is-ok {
+  color: var(--ok);
+}
+
+.models-msg.is-err {
+  color: var(--danger);
+}
+
+.models-budget {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--s3);
+  align-items: end;
+}
+
+.models-budget .field {
+  margin: 0;
+}
+
+.models-adv summary {
+  cursor: pointer;
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.models-adv__body {
+  display: grid;
+  gap: var(--s2);
+  padding-top: var(--s3);
+}

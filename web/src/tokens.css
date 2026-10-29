@@ -1,0 +1,288 @@
+/* 设计令牌（来自 docs/ux/web.md §7）——唯一样式来源。
+   颜色策略：Restrained（中性灰 + 一个靛蓝强调色 + 完整状态语义色）。
+   靛蓝承担「校对批注 / 选中 / 主行动」；状态色不复用靛蓝。 */
+
+:root {
+  /* 表面 */
+  --desk: #f5f6f7;
+  --surface: #ffffff;
+  --paper: #ffffff;
+
+  /* 文字 */
+  --ink: #14161a;
+  --ink-2: #39414e;
+  --ink-3: #5b6472;
+
+  /* 线 */
+  --line: #e3e6ea;
+  --line-strong: #cdd3da;
+
+  /* 强调（靛蓝） */
+  --accent: #2c5aa0;
+  --accent-strong: #23477f;
+  --accent-soft: #eef3fb;
+
+  /* 状态 */
+  --danger: #b42318;
+  --danger-soft: #fdf3f2;
+  --warn: #b54708;
+  --warn-soft: #fdf6ec;
+  --ok: #027a48;
+  --ok-soft: #eff8f3;
+
+  /* 字号（固定台阶，不做流式） */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 17px;
+  --text-xl: 24px;
+  --text-book: 18px;
+
+  /* 间距（4px 基数） */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s12: 48px;
+
+  /* 圆角 */
+  --r-control: 3px;
+  --r-panel: 6px;
+  --r-pill: 999px;
+
+  /* 阴影（必须有偏移 + 模糊） */
+  --shadow-panel: 0 1px 2px rgba(20, 22, 26, 0.06), 0 4px 12px rgba(20, 22, 26, 0.08);
+  --shadow-paper: 0 1px 3px rgba(20, 22, 26, 0.1), 0 12px 32px rgba(20, 22, 26, 0.12);
+
+  /* 动效 */
+  --t-micro: 120ms;
+  --t-panel: 180ms;
+  --t-sheet: 240ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* 字体 */
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK SC",
+    "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+  --font-book: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", Georgia, serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font: var(--text-base) / 1.5 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  padding: 5px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+  background: var(--surface);
+  cursor: pointer;
+  transition: background var(--t-micro) var(--ease);
+}
+
+button:hover:not(:disabled) {
+  background: var(--desk);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+button.ghost {
+  border-color: transparent;
+  background: transparent;
+}
+
+button.ghost:hover:not(:disabled) {
+  background: var(--desk);
+}
+
+button.danger {
+  color: var(--danger);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+select,
+textarea {
+  padding: 4px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+  background: var(--surface);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+}
+
+th {
+  background: var(--desk);
+  text-align: left;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 600;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--ink-3);
+}
+
+.hint {
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+  margin: var(--s1) 0 var(--s3);
+}
+
+.tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  font-size: var(--text-xs);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.tag.ok {
+  color: var(--ok);
+  border-color: rgba(2, 122, 72, 0.25);
+  background: var(--ok-soft);
+}
+
+.tag.err {
+  color: var(--danger);
+  border-color: rgba(180, 35, 24, 0.25);
+  background: var(--danger-soft);
+}
+
+.tag.warn {
+  color: var(--warn);
+  border-color: rgba(181, 71, 8, 0.25);
+  background: var(--warn-soft);
+}
+
+.tag.acc {
+  color: var(--accent);
+  border-color: rgba(44, 90, 160, 0.25);
+  background: var(--accent-soft);
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-panel);
+}
+
+.row {
+  display: flex;
+  gap: var(--s2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.field {
+  margin: var(--s2) 0;
+}
+
+.field label {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--ink-3);
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+}
+
+.scroll {
+  overflow: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

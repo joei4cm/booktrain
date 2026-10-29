@@ -1,0 +1,313 @@
+/* 成本面板样式：颜色/字号/间距/圆角/动效一律取自 tokens.css，不硬编码任何色值。 */
+
+.cost {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+  padding: var(--s4) 0 var(--s6);
+  min-width: 0;
+}
+
+.cost-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.cost-head-spacer {
+  flex: 1 1 auto;
+}
+
+.cost-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* ---------------------------------------------------------------- 合计 / 预算 */
+
+.cost-summary {
+  padding: var(--s4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  /* flex 项默认 min-width:auto，会被内容最小宽度撑开；显式归零才能在窄屏收缩 */
+  min-width: 0;
+}
+
+.cost-kv-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s5);
+  align-items: baseline;
+}
+
+.cost-kv {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+}
+
+.cost-kv-label {
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+.cost-kv-value {
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cost-kv.is-total .cost-kv-value {
+  font-size: var(--text-lg);
+}
+
+.cost-budget {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.cost-budget-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+.cost-budget-over {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* 条，不用环（§6） */
+.cost-bar {
+  height: 8px;
+  background: var(--line);
+  border-radius: var(--r-control);
+  overflow: hidden;
+  flex: 1 1 auto;
+  min-width: 40px;
+}
+
+.cost-bar.is-budget {
+  height: 10px;
+}
+
+.cost-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--t-panel) var(--ease);
+}
+
+.cost-bar-fill.is-over {
+  background: var(--danger);
+}
+
+.cost-alert {
+  margin: var(--s1) 0 0;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--danger);
+  border-radius: var(--r-control);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: var(--text-sm);
+}
+
+.cost-note {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+/* ---------------------------------------------------------------- 分块 */
+
+.cost-blocks {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cost-block {
+  border-top: 1px solid var(--line);
+  padding: var(--s4) 0;
+  min-width: 0;
+  /* 窄屏时表格在自己的块里横向滚动，不把整页撑破 */
+  overflow-x: auto;
+}
+
+.cost-block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin-bottom: var(--s2);
+}
+
+.cost-block-title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.cost-block-total {
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+.cost-block-empty {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+.cost-table {
+  width: 100%;
+}
+
+.cost-table th,
+.cost-table td {
+  padding: var(--s1) var(--s2);
+  vertical-align: middle;
+}
+
+/* tokens.css 给所有 th 加了 white-space: nowrap；这里放开，
+   否则长模型名（claude-sonnet-4-5）会把整页撑出横向滚动。 */
+.cost-table th {
+  white-space: normal;
+}
+
+.cost-table th.cost-num {
+  white-space: nowrap;
+}
+
+/* 表格标题对读屏可见，但视觉上不重复块标题 */
+.cost-caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.cost-name {
+  font-weight: 500;
+  text-align: left;
+  /* 模型名很长也不许把表格撑破 */
+  overflow-wrap: anywhere;
+}
+
+.cost-name-sub {
+  display: block;
+  font-weight: 400;
+  font-size: var(--text-xs);
+  color: var(--ink-3);
+  overflow-wrap: anywhere;
+}
+
+.cost-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cost-unpriced {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--warn);
+}
+
+.cost-unknown {
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+.cost-share-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.cost-pct {
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+  min-width: 40px;
+  text-align: right;
+}
+
+/* ---------------------------------------------------------------- 空 / 错 / 骨架 */
+
+.cost-empty {
+  margin: 0;
+  padding: var(--s6) var(--s4);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-panel);
+  background: var(--surface);
+  color: var(--ink-3);
+  text-align: center;
+}
+
+.cost-error {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--danger);
+  border-radius: var(--r-control);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: var(--text-sm);
+}
+
+.cost-error-text {
+  margin: 0;
+}
+
+.cost-details {
+  flex: 1 1 100%;
+}
+
+.cost-details summary {
+  cursor: pointer;
+  color: var(--ink-3);
+}
+
+.cost-details pre {
+  margin: var(--s2) 0 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 加载中：骨架屏（结构同真实内容），不是居中转圈（§8） */
+.cost-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.cost-skel-line {
+  height: var(--text-md);
+  width: 40%;
+  border-radius: var(--r-control);
+  background: var(--desk);
+}
+
+.cost-skel-bar {
+  height: 10px;
+  width: 100%;
+  border-radius: var(--r-control);
+  background: var(--desk);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cost-bar-fill {
+    transition: none;
+  }
+}

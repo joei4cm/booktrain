@@ -1,0 +1,157 @@
+/* 校对面板样式。颜色一律取自 tokens.css（唯一令牌来源），不硬编码色值。 */
+
+.proof {
+  padding: var(--s5);
+  display: grid;
+  gap: var(--s4);
+}
+
+/* 被嵌进别的面板（如工作台右栏）时不再画第二层卡片：避免双边框、双阴影 */
+.panel .proof {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+}
+
+.proof-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s4);
+  flex-wrap: wrap;
+}
+
+.proof-head h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.proof-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex-wrap: wrap;
+}
+
+.proof-stat {
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
+.proof .proof-breakdown {
+  margin: 0;
+}
+
+.proof-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+  padding-top: var(--s3);
+}
+
+.proof-mode {
+  margin: 0;
+  min-width: 260px;
+}
+
+.proof .proof-cost {
+  margin: 0;
+  flex: 1 1 320px;
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+/* 会花钱的模式：用警告色标出来（文字本身已经说明，这里只是二次强调） */
+.proof .proof-cost--money {
+  color: var(--warn);
+}
+
+.proof-table-wrap {
+  overflow-x: auto;
+}
+
+.proof-caption {
+  caption-side: top;
+  text-align: left;
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+  padding-bottom: var(--s1);
+}
+
+.proof-msg-line {
+  color: var(--ink);
+}
+
+.proof-meta {
+  margin-top: 2px;
+  color: var(--ink-3);
+  font-size: var(--text-xs);
+}
+
+.proof-suggestion {
+  display: block;
+}
+
+.proof-context {
+  margin-top: var(--s1);
+}
+
+.proof-context summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-size: var(--text-xs);
+}
+
+.proof-context__body {
+  display: grid;
+  gap: var(--s2);
+  padding-top: var(--s2);
+}
+
+.proof-context__label {
+  font-size: var(--text-xs);
+  color: var(--ink-3);
+}
+
+/* 原文/译文是书里的文字，用衬线体更像稿纸 */
+.proof-context__text {
+  font-family: var(--font-book);
+  font-size: var(--text-base);
+  color: var(--ink-2);
+}
+
+.proof-empty {
+  display: grid;
+  gap: var(--s2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  padding: var(--s4);
+}
+
+.proof-empty__lead {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.proof-empty__list {
+  margin: 0;
+  padding-left: var(--s5);
+  display: grid;
+  gap: var(--s1);
+  color: var(--ink-3);
+}
+
+.proof-msg {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.proof-msg.is-ok {
+  color: var(--ok);
+}
+
+.proof-msg.is-err {
+  color: var(--danger);
+}
