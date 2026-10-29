@@ -16,7 +16,6 @@ from pydantic import BaseModel
 from ..config import (
     AppConfig,
     apply_platform,
-    dump_toml,
     load_config,
     load_project_manifest,
     write_project_config,
@@ -287,23 +286,9 @@ class ProjectHandle:
         return keys_path()
 
     def _save_global_key(self, provider: str, api_key: str) -> None:
-        """把密钥写进全局 keys.toml（0600）。项目目录里不写任何密钥。"""
-        import tomllib
-        path = self._keys_path()
-        data: dict = {}
-        if path.exists():
-            try:
-                data = tomllib.loads(path.read_text("utf-8"))
-            except (OSError, tomllib.TOMLDecodeError):
-                data = {}
-        key_section = data.setdefault("key", {})
-        key_section[provider] = {"api_key": api_key}
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(dump_toml(data), encoding="utf-8")
-        try:
-            path.chmod(0o600)
-        except OSError:
-            pass
+        """把密钥写进本地加密存储（Fernet + 主密钥文件）。"""
+        from ..config.secrets import set_key
+        set_key(provider, api_key)
 
     def segments_page(self, relpath: str | None, offset: int, limit: int) -> dict:
         for d in self.docs:

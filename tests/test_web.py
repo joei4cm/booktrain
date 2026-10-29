@@ -223,8 +223,16 @@ def test_settings_roundtrip(client, tmp_path):
     assert pcfg["project"]["target_langs"] == ["english", "japanese"]
 
 
-def test_settings_no_plaintext_key(client, tmp_path):
-    """密钥写全局 keyring；项目目录里一个字节都不许有。"""
+def test_settings_no_plaintext_key(client, tmp_path, monkeypatch):
+    """密钥写加密存储；项目目录里一个字节都不许有明文。"""
+    import booktran.config.secrets as secrets_mod
+    # 隔离加密存储到测试目录
+    fake_dir = tmp_path / "secrets"
+    fake_dir.mkdir()
+    monkeypatch.setattr(secrets_mod, "_KEYS_DIR", fake_dir)
+    monkeypatch.setattr(secrets_mod, "_ENC_PATH", fake_dir / "keys.enc")
+    monkeypatch.setattr(secrets_mod, "_MASTER_PATH", fake_dir / ".master_key")
+
     r = client.put("/api/project/novel/settings",
                    json={"api_key": "sk-test-123", "provider": "anthropic"})
     assert r.status_code == 200
@@ -232,10 +240,13 @@ def test_settings_no_plaintext_key(client, tmp_path):
     for f in proj.rglob("*"):
         if f.is_file():
             assert "sk-test-123" not in f.read_text("utf-8", errors="ignore"), f
-    # 全局 keys.toml 里有（0600）
-    import booktran.config as config_mod
-    keys_file = config_mod.GLOBAL_CONFIG_PATH.parent / "keys.toml"
-    assert "sk-test-123" in keys_file.read_text("utf-8")
+    # 加密存储里有（密文，不是明文）
+    enc_file = fake_dir / "keys.enc"
+    assert enc_file.exists()
+    assert b"sk-test-123" not in enc_file.read_bytes()  # 密文不含明文
+    # 解密后能取到
+    from booktran.config.secrets import get_key
+    assert get_key("anthropic") == "sk-test-123"
     # GET settings 不回传明文
     s = client.get("/api/project/novel/settings").json()
     assert s["llm"]["has_api_key"] is True
