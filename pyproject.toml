@@ -1,0 +1,86 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "booktran"
+version = "0.9.0"
+description = "Book translation infra: EPUB/TXT/PDF/MOBI translation with reference-based model profiles, role routing, resumable state, visible cost and live typesetting"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+keywords = ["translation", "ebook", "epub", "pdf", "mobi", "llm", "typography"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Text Processing :: Linguistic",
+]
+dependencies = [
+    "httpx>=0.27",
+    "beautifulsoup4>=4.12",
+]
+
+[project.optional-dependencies]
+tok = ["tiktoken>=0.7"]
+pdf = ["pymupdf>=1.25"]
+zh = ["opencc-python-reimplemented>=0.1.7"]
+web = ["fastapi>=0.110", "uvicorn>=0.29", "python-multipart>=0.0.9"]
+mobi = ["mobi>=0.4"]
+test = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://github.com/joei4cm/booktrain"
+Documentation = "https://github.com/joei4cm/booktrain/tree/main/docs"
+Issues = "https://github.com/joei4cm/booktrain/issues"
+
+[project.scripts]
+booktran = "booktran.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+# 前端构建产物（CI 在打包前 `cd web && npm run build` 生成）
+booktran = ["web/dist/**/*", "web/dist/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["reference", "src/booktran/web/dist", "web/node_modules", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
+ignore = ["E501", "UP042"]   # UP042：str+Enum 是有意的（JSON 序列化要字符串值）
+
+[tool.ruff.lint.per-file-ignores]
+# 测试里允许长断言与魔法值
+"tests/*" = ["B011", "E402"]
+# FastAPI 的依赖注入就是靠默认值里的函数调用（File(...)）
+"src/booktran/web/app.py" = ["B008"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_configs = true
+# 逐步收紧：先保证新增模块干净，历史模块标注为待办
+exclude = ["reference/"]
+
+[[tool.mypy.overrides]]
+module = ["booktran.web.*", "booktran.adapters.mobi", "booktran.ocr"]
+ignore_errors = true
+
+[tool.coverage.run]
+source = ["src/booktran"]
+omit = ["*/web/dist/*", "*/__main__.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

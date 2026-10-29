@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+reference/
+.pytest_cache/
+*.egg-info/
+
+# 前端构建产物（CI 在打包前构建）
+src/booktran/web/dist/
+web/node_modules/
+
+# 工具缓存
+.mypy_cache/
+.ruff_cache/
+web/tsconfig.tsbuildinfo
+web/node_modules/
