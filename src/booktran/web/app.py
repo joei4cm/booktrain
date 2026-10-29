@@ -803,6 +803,16 @@ def build_app(projects_root: Path, api_key_default: str = ""):
         except KeyError:
             raise HTTPException(404, "项目不存在") from None
 
+    # ---------- models.dev 供应商模板 ----------
+    @app.get("/api/providers")
+    async def list_providers(refresh: bool = False) -> dict:
+        from .providers import fetch_providers
+        try:
+            providers = await fetch_providers(force=refresh)
+            return {"providers": providers}
+        except Exception as e:  # noqa: BLE001
+            raise HTTPException(502, f"拉取供应商模板失败: {e}") from e
+
     # ---------- 模型档案 CRUD（全局 profiles.toml） ----------
     @app.post("/api/profiles")
     async def create_profile(body: dict):

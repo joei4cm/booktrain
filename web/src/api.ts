@@ -4,6 +4,7 @@ import type {
   Glossary,
   Issue,
   Project,
+  ProviderTemplate,
   QualityReport,
   Settings,
   StreamEvent,
@@ -45,6 +46,8 @@ const put = <T>(path: string, body: unknown) =>
 
 export const api = {
   projects: () => request<Project[]>("/api/projects"),
+  providers: (refresh = false) =>
+    request<{ providers: ProviderTemplate[] }>(`/api/providers${refresh ? "?refresh=true" : ""}`),
   project: (id: string) => request<Project>(`/api/project/${id}`),
   reload: (id: string) => post<Project>(`/api/project/${id}/reload`),
   remove: (id: string) => request<void>(`/api/project/${id}`, { method: "DELETE" }),

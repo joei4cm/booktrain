@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { JSX } from "react";
 
 import { api } from "../api";
-import type { Profile, RoleSpec } from "../types";
+import type { Profile, ProviderTemplate, RoleSpec } from "../types";
 import "./Models.css";
 
 export interface ModelsProps {
@@ -267,6 +267,10 @@ export function Models(props: ModelsProps): JSX.Element {
 function ProfileForm(props: { profile: Profile | null; onCancel: () => void; onSubmit: (p: Profile, isNew: boolean) => void }): JSX.Element {
   const { profile, onCancel, onSubmit } = props;
   const isNew = !profile;
+  const [providers, setProviders] = useState<ProviderTemplate[]>([]);
+  const [tplProvider, setTplProvider] = useState("");
+  const [tplModel, setTplModel] = useState("");
+  const [tplLoading, setTplLoading] = useState(true);
   const [id, setId] = useState(profile?.id ?? "");
   const [kind, setKind] = useState(profile?.kind ?? "chat");
   const [provider, setProvider] = useState(profile?.provider ?? "anthropic");
@@ -277,6 +281,33 @@ function ProfileForm(props: { profile: Profile | null; onCancel: () => void; onS
   const [priceOut, setPriceOut] = useState(profile?.price_out ?? null);
   const [concurrency, setConcurrency] = useState(4);
 
+  // 加载 models.dev 供应商模板
+  useEffect(() => {
+    let alive = true;
+    api.providers().then((r) => { if (alive) { setProviders(r.providers); setTplLoading(false); } }).catch(() => { if (alive) setTplLoading(false); });
+    return () => { alive = false; };
+  }, []);
+
+  function applyTemplate(pid: string, mid: string) {
+    setTplProvider(pid); setTplModel(mid);
+    if (!pid || !mid) return;
+    const tp = providers.find((x) => x.id === pid);
+    if (!tp) return;
+    const tm = tp.models.find((x) => x.id === mid);
+    if (!tm) return;
+    // 自动填充字段
+    setProvider(tp.id === "anthropic" ? "anthropic" : tp.id === "openai" ? "openai" : "openai");
+    setBaseUrl(tp.api);
+    setKeyEnv(tp.env[0] ?? "");
+    setModel(tm.id);
+    setPriceIn(tm.price_in);
+    setPriceOut(tm.price_out);
+    if (tm.vision) setKind("vision");
+    if (!isNew && id === "") setId(tp.id);
+    if (!isNew && id !== "" && id !== profile?.id) return;
+    if (isNew) setId(tp.id);
+  }
+
   function submit() {
     if (!id.trim()) return;
     onSubmit({ id: id.trim(), kind, provider, model: model.trim(), base_url: baseUrl.trim(), key_env: keyEnv.trim(), price_in: priceIn, price_out: priceOut, concurrency, caps: [], api_key: "", api_keys: [], rpm: 0, max_output_tokens: 8192, temperature: null, timeout: 300, max_retries: 4, prompt_preset: "default", price_cache_read: null, explicit: [], key_state: keyEnv.trim() ? `env:${keyEnv.trim()}` : "未找到" }, isNew);
@@ -286,6 +317,24 @@ function ProfileForm(props: { profile: Profile | null; onCancel: () => void; onS
     <div className="pf-backdrop" role="presentation" onClick={onCancel}>
       <div className="pf-modal" role="dialog" aria-label={isNew ? "添加档案" : `编辑档案：${profile?.id}`} onClick={(e) => e.stopPropagation()}>
         <h3>{isNew ? "添加模型档案" : `编辑档案：${profile?.id}`}</h3>
+
+        {/* models.dev 模板选择 */}
+        <div className="pf-tpl">
+          <span className="pf-tpl__label">从模板选择</span>
+          <select value={tplProvider} onChange={(e) => { setTplProvider(e.target.value); setTplModel(""); }} aria-label="选择供应商">
+            <option value="">{tplLoading ? "加载中…" : "手动填写"}</option>
+            {providers.map((tp) => <option key={tp.id} value={tp.id}>{tp.name}</option>)}
+          </select>
+          {tplProvider && (
+            <select value={tplModel} onChange={(e) => applyTemplate(tplProvider, e.target.value)} aria-label="选择模型">
+              <option value="">选择模型…</option>
+              {providers.find((x) => x.id === tplProvider)?.models.map((m) => (
+                <option key={m.id} value={m.id}>{m.name}{m.price_in != null ? ` · $${m.price_in}/$${m.price_out}` : ""}</option>
+              ))}
+            </select>
+          )}
+        </div>
+
         <div className="pf-grid">
           <div className="field"><label htmlFor="pf-id">档案名称（唯一 ID）</label><input id="pf-id" type="text" value={id} disabled={!isNew} placeholder="如 claude / deepseek / qwen-local" onChange={(e) => setId(e.target.value)} /></div>
           <div className="field"><label htmlFor="pf-kind">类型</label><select id="pf-kind" value={kind} onChange={(e) => setKind(e.target.value)}><option value="chat">对话（文本翻译）</option><option value="vision">视觉（图片 / 扫描页）</option><option value="ocr">OCR（本地文字识别）</option><option value="local">本地模型</option></select></div>

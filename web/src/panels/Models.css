@@ -188,3 +188,27 @@
   padding-top: var(--s3);
   border-top: 1px solid var(--line);
 }
+
+/* models.dev 模板选择 */
+.pf-tpl {
+  display: flex;
+  gap: var(--s2);
+  align-items: center;
+  padding: var(--s3);
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  margin-bottom: var(--s4);
+  flex-wrap: wrap;
+}
+
+.pf-tpl__label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.pf-tpl select {
+  min-width: 160px;
+}

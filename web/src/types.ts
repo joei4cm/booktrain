@@ -130,6 +130,26 @@ export interface Profile {
   explicit: string[];
 }
 
+export interface ProviderModel {
+  id: string;
+  name: string;
+  description: string;
+  context: number;
+  output: number;
+  price_in: number | null;
+  price_out: number | null;
+  vision: boolean;
+}
+
+export interface ProviderTemplate {
+  id: string;
+  name: string;
+  api: string;
+  env: string[];
+  doc: string;
+  models: ProviderModel[];
+}
+
 export interface RoleSpec {
   profile?: string;
   default?: string;
