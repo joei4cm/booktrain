@@ -8,6 +8,7 @@
  */
 import { useMemo, useState } from "react";
 import type { JSX } from "react";
+import { useI18n } from "../i18n";
 
 import type { Issue, QualityReport } from "../types";
 import "./Proof.css";
@@ -23,9 +24,9 @@ export interface ProofProps {
 }
 
 const SEVERITY_LABELS: Record<string, string> = {
-  error: "错误",
-  warn: "警告",
-  info: "提示",
+  error: "error",
+  warn: "warn",
+  info: "info",
 };
 
 /** 严重度 → 徽标样式（.tag.err / .tag.warn / 中性 .tag）。 */
@@ -59,6 +60,7 @@ function severityRank(severity: string): number {
 }
 
 export function Proof(props: ProofProps): JSX.Element {
+  const { t } = useI18n();
   const { projectId, report, onRun, onApply, onRevert, busy } = props;
 
   const [mode, setMode] = useState<"qa" | "llm">("qa");
@@ -162,7 +164,7 @@ export function Proof(props: ProofProps): JSX.Element {
           }}
           disabled={runDisabled}
         >
-          {busy === true ? "运行中…" : "运行质检"}
+          {busy === true ? "运行中…" : t("proof.run")}
         </button>
         {mode === "llm" ? (
           <p className="proof-cost proof-cost--money" role="status">
@@ -269,7 +271,7 @@ export function Proof(props: ProofProps): JSX.Element {
                         }}
                         disabled={!canApply || applying === key}
                       >
-                        {applying === key ? "写回中…" : "采用建议"}
+                        {applying === key ? t("proof.writing") : t("proof.adopt")}
                       </button>
                       {onRevert ? (
                         <button

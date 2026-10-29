@@ -13,6 +13,7 @@
  */
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { JSX } from "react";
+import { useI18n } from "../i18n";
 
 import type { Glossary as GlossaryModel } from "../types";
 import "./Glossary.css";
@@ -194,6 +195,7 @@ function buildPayload(d: GlossaryModel): GlossaryModel {
 }
 
 export function Glossary(props: GlossaryProps): JSX.Element {
+  const { t } = useI18n();
   const { projectId, glossary, onSave, onRunAnalyze, busy } = props;
 
   const [draft, setDraft] = useState<GlossaryModel>(() => cloneGlossary(glossary));
@@ -389,7 +391,7 @@ export function Glossary(props: GlossaryProps): JSX.Element {
               }}
               disabled={busyNow || analyzing}
             >
-              {analyzing ? "分析中…" : "术语分析"}
+              {analyzing ? "分析中…" : t("glossary.analyze")}
             </button>
           ) : null}
           <button
@@ -487,7 +489,7 @@ export function Glossary(props: GlossaryProps): JSX.Element {
                   }}
                   disabled={busyNow || analyzing}
                 >
-                  {analyzing ? "分析中…" : "术语分析"}
+                  {analyzing ? "分析中…" : t("glossary.analyze")}
                 </button>
               ) : null}
               <button type="button" onClick={addTerm}>

@@ -286,3 +286,54 @@ a:hover {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ---- 暗色主题 ---- */
+[data-theme="dark"] {
+  --desk: #14161a;
+  --surface: #1a1d23;
+  --paper: #1a1d23;
+  --ink: #e8eaed;
+  --ink-2: #b0b6c0;
+  --ink-3: #6b7280;
+  --line: #2a2e35;
+  --line-strong: #3a3e45;
+  --accent: #5b8dd6;
+  --accent-strong: #7aa5e8;
+  --accent-soft: #1a2740;
+  --danger: #e05a5a;
+  --danger-soft: #2a1515;
+  --warn: #d4952a;
+  --warn-soft: #2a2010;
+  --ok: #34a86a;
+  --ok-soft: #0f2a1a;
+  --shadow-panel: 0 1px 2px rgba(0,0,0,.2), 0 4px 12px rgba(0,0,0,.15);
+  --shadow-paper: 0 1px 3px rgba(0,0,0,.25), 0 12px 32px rgba(0,0,0,.2);
+}
+
+[data-theme="dark"] button {
+  background: var(--surface);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+[data-theme="dark"] button:hover:not(:disabled) {
+  background: var(--line);
+}
+
+[data-theme="dark"] th {
+  background: var(--desk);
+}
+
+[data-theme="dark"] tr:hover td {
+  background: var(--desk);
+}
+
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--desk);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}

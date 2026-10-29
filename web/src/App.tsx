@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { JSX } from "react";
+import { useI18n } from "./i18n";
+import { useTheme } from "./theme";
 import { api, subscribe } from "./api";
 import type { CostSummary, Glossary as GlossaryModel, Profile, Project, QualityReport, RoleSpec, StreamEvent } from "./types";
 import { Library } from "./panels/Library";
@@ -11,10 +13,12 @@ import { CommandPalette } from "./panels/CommandPalette";
 
 type Route = "library" | "workspace" | "glossary" | "models" | "cost";
 
-const NAV: { id: Route; label: string; icon: JSX.Element }[] = [
+function useNavItems(): { id: Route; label: string; icon: JSX.Element }[] {
+  const { t } = useI18n();
+  return [
   {
     id: "library",
-    label: "书架",
+    label: t("nav.library"),
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 5h5v14H4zM10 5h4v14h-4zM15.5 5.6l3.4 1.1-3.9 12.4-3.4-1.1z" />
@@ -23,7 +27,7 @@ const NAV: { id: Route; label: string; icon: JSX.Element }[] = [
   },
   {
     id: "workspace",
-    label: "工作台",
+    label: t("nav.workspace"),
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M3 4h8v16H3zM13 4h8v7h-8zM13 13h8v7h-8z" />
@@ -32,7 +36,7 @@ const NAV: { id: Route; label: string; icon: JSX.Element }[] = [
   },
   {
     id: "models",
-    label: "模型",
+    label: t("nav.models"),
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="3" />
@@ -42,7 +46,7 @@ const NAV: { id: Route; label: string; icon: JSX.Element }[] = [
   },
   {
     id: "glossary",
-    label: "术语",
+    label: t("nav.glossary"),
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 5h7v14H4zM13 5h7v14h-7zM6.5 9h2M6.5 12h2M6.5 15h2M15 9h3M15 12h3M15 15h3" />
@@ -51,7 +55,7 @@ const NAV: { id: Route; label: string; icon: JSX.Element }[] = [
   },
   {
     id: "cost",
-    label: "成本",
+    label: t("nav.cost"),
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 3v18M16 7.5c0-1.4-1.6-2.5-4-2.5S8 6.1 8 7.5 9.6 10 12 10s4 1.1 4 2.5S14.4 15 12 15s-4-1.1-4-2.5" />
@@ -59,8 +63,11 @@ const NAV: { id: Route; label: string; icon: JSX.Element }[] = [
     ),
   },
 ];
+}
 
 export default function App() {
+  const { t, lang, setLang } = useI18n();
+  const { theme, setTheme } = useTheme();
   const [projects, setProjects] = useState<Project[]>([]);
   const [project, setProject] = useState<Project | null>(null);
   const [route, setRoute] = useState<Route>("library");
@@ -206,15 +213,17 @@ export default function App() {
     say(r.message || (r.ok ? "已请求停止" : "无法停止"));
   }, [project, say]);
 
+  const navItems = useNavItems();
   const budget = project?.budget ?? { max_cost: 0, max_tokens: 0 };
+  const [showSettings, setShowSettings] = useState(false);
 
   const actions = useMemo(
     () => [
-      { id: "library", label: "回到书架", run: () => setRoute("library") },
-      { id: "workspace", label: "打开工作台", run: () => setRoute("workspace") },
-      { id: "glossary", label: "术语与背景", run: () => setRoute("glossary") },
-      { id: "models", label: "模型与角色", run: () => setRoute("models") },
-      { id: "cost", label: "成本明细", run: () => setRoute("cost") },
+      { id: "library", label: t("nav.library"), run: () => setRoute("library") },
+      { id: "workspace", label: t("nav.workspace"), run: () => setRoute("workspace") },
+      { id: "glossary", label: t("nav.glossary"), run: () => setRoute("glossary") },
+      { id: "models", label: t("nav.models"), run: () => setRoute("models") },
+      { id: "cost", label: t("nav.cost"), run: () => setRoute("cost") },
       {
         id: "translate",
         label: "开始 / 继续翻译",
@@ -254,7 +263,7 @@ export default function App() {
           <>
             {running && (
               <button onClick={() => void cancel()} title="优雅暂停：当前块结束后保存">
-                停止
+                {t("app.stop")}
               </button>
             )}
             <button
@@ -262,18 +271,21 @@ export default function App() {
               disabled={running}
               onClick={() => void startTranslate()}
             >
-              {project.progress.translated > 0 ? "继续翻译" : "开始翻译"}
+              {project.progress.translated > 0 ? t("app.resume") : t("app.start")}
             </button>
           </>
         )}
-        <button className="ghost" onClick={() => setPaletteOpen(true)} aria-label="命令面板">
+        <button className="ghost" onClick={() => setShowSettings(!showSettings)} aria-label={t("settings.title")} aria-expanded={showSettings}>
+          ⚙
+        </button>
+        <button className="ghost" onClick={() => setPaletteOpen(true)} aria-label={t("app.palette")}>
           ⌘K
         </button>
       </header>
 
       <div className="body">
         <nav className="nav" aria-label="主导航">
-          {NAV.map((n) => (
+          {navItems.map((n) => (
             <button
               key={n.id}
               onClick={() => setRoute(n.id)}
@@ -404,7 +416,7 @@ export default function App() {
             void states;
             return (
               <span key={s} className="tag">
-                {s === "translate" ? "翻译" : s === "proofread" ? "校对" : "排版"}
+                {s === "translate" ? t("ws.stageTranslate") : s === "proofread" ? t("ws.stageProofread") : t("ws.stageTypeset")}
               </span>
             );
           })}
@@ -424,6 +436,41 @@ export default function App() {
           )}
           <span className="muted">{project.task.message || project.task.state}</span>
         </footer>
+      )}
+
+      {showSettings && (
+        <div className="settings-pop" role="dialog" aria-label={t("settings.title")}>
+          <div className="settings-pop__section">
+            <h4>{t("settings.theme")}</h4>
+            <div className="settings-pop__row">
+              {(["light", "dark", "auto"] as const).map((th) => (
+                <button
+                  key={th}
+                  className={theme === th ? "primary" : "ghost"}
+                  onClick={() => setTheme(th)}
+                  aria-pressed={theme === th}
+                >
+                  {t(th === "light" ? "settings.themeLight" : th === "dark" ? "settings.themeDark" : "settings.themeAuto")}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="settings-pop__section">
+            <h4>{t("settings.language")}</h4>
+            <div className="settings-pop__row">
+              {(["zh", "en"] as const).map((l) => (
+                <button
+                  key={l}
+                  className={lang === l ? "primary" : "ghost"}
+                  onClick={() => setLang(l)}
+                  aria-pressed={lang === l}
+                >
+                  {l === "zh" ? "中文" : "English"}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
       {toast && (

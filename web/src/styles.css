@@ -187,3 +187,38 @@
   max-width: 60vw;
   z-index: 60;
 }
+
+/* 设置弹出层 */
+.settings-pop {
+  position: absolute;
+  top: 44px;
+  right: var(--s3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-paper);
+  padding: var(--s3);
+  z-index: 40;
+  min-width: 200px;
+}
+
+.settings-pop__section {
+  margin-bottom: var(--s3);
+}
+
+.settings-pop__section:last-child {
+  margin-bottom: 0;
+}
+
+.settings-pop h4 {
+  margin: 0 0 var(--s1);
+  font-size: var(--text-xs);
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.settings-pop__row {
+  display: flex;
+  gap: var(--s1);
+}

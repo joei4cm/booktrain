@@ -9,6 +9,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import type { JSX } from "react";
+import { useI18n } from "../i18n";
 
 import { api } from "../api";
 import type { CostBucket, CostSummary } from "../types";
@@ -240,6 +241,7 @@ function CostBlock(props: BlockProps): JSX.Element {
 /* ------------------------------------------------------------------ 面板 */
 
 export function Cost(props: CostProps): JSX.Element {
+  const { t } = useI18n();
   const { projectId, cost, budget, onRaiseBudget } = props;
 
   // 父组件给的汇总 + 用户手动刷新的结果；换项目时丢掉旧的刷新结果。
@@ -421,9 +423,9 @@ export function Cost(props: CostProps): JSX.Element {
         <p className="cost-empty">还没有任何用量记录。跑一次翻译后，这里会显示钱花到了哪里。</p>
       ) : (
         <div className="cost-blocks">
-          <CostBlock title="按阶段" nameHeader="阶段" dim={stageDim} />
-          <CostBlock title="按角色" nameHeader="角色" dim={roleDim} />
-          <CostBlock title="按模型" nameHeader="模型" dim={modelDim} />
+          <CostBlock title={t("cost.byStage")} nameHeader="阶段" dim={stageDim} />
+          <CostBlock title={t("cost.byRole")} nameHeader="角色" dim={roleDim} />
+          <CostBlock title={t("cost.byModel")} nameHeader="模型" dim={modelDim} />
           <CostBlock title="按目标语言" nameHeader="语言" dim={langDim} />
         </div>
       )}

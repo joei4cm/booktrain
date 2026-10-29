@@ -8,6 +8,7 @@
  * - 状态永远带文字，不靠颜色单独表达（§10「状态从不只用颜色」）。
  * - 语言用多选，不让用户手打逗号分隔的语言码（评审 R8 / P2-7）。
  */
+import { useI18n } from "../i18n";
 import { useCallback, useRef, useState } from "react";
 import type { ChangeEvent, DragEvent, JSX } from "react";
 
@@ -348,6 +349,7 @@ function Row(props: RowProps): JSX.Element {
 /* ------------------------------------------------------------------ 面板 */
 
 export function Library(props: LibraryProps): JSX.Element {
+  const { t } = useI18n();
   const { projects, selectedId, onSelect, onUpload, onDelete, busy = false } = props;
 
   const [langs, setLangs] = useState<string[]>(["chinese_simplified"]);
@@ -457,7 +459,7 @@ export function Library(props: LibraryProps): JSX.Element {
       {!hasProjects ? (
         /* 空状态 = 教学：四步，只有第一步是主行动 */
         <div className="lib-empty">
-          <h2 className="lib-empty-title">把一本书变成你能读的语言</h2>
+          <h2 className="lib-empty-title">{t("library.title")}</h2>
           <ol className="lib-steps">
             <li className="lib-step">
               <span className="lib-step-num" aria-hidden="true">

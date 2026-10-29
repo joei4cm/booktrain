@@ -1,3 +1,4 @@
+import { useI18n } from "../i18n";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api";
 import type { Issue, Project, QualityReport, Segment } from "../types";
@@ -16,6 +17,7 @@ export interface WorkspaceProps {
 
 /** 工作台：左＝目录/阶段，中＝活页预览与段落，右＝校对。 */
 export function Workspace(props: WorkspaceProps) {
+  const { t } = useI18n();
   const { project, report, previewLang } = props;
   const [tab, setTab] = useState<"sheet" | "segments">("sheet");
   const [segments, setSegments] = useState<Segment[]>([]);
@@ -70,7 +72,7 @@ export function Workspace(props: WorkspaceProps) {
         <h2>阶段</h2>
         <ul className="ws-stages">
           {(["translate", "proofread", "typeset"] as const).map((s) => {
-            const label = s === "translate" ? "翻译" : s === "proofread" ? "校对" : "排版";
+            const label = s === "translate" ? t("ws.stageTranslate") : s === "proofread" ? t("ws.stageProofread") : t("ws.stageTypeset");
             const states = Object.values(project.per_lang).length;
             void states;
             const done = s === "translate" ? project.progress.translated : 0;
