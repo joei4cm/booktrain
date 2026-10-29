@@ -1,0 +1,52 @@
+# Dependabot：三种生态，每周检查一次。
+#
+# - pip      → 项目的 Python 依赖（pyproject.toml 里的 dependencies 与 [project.optional-dependencies]）
+# - npm      → 前端依赖（web/package.json + web/package-lock.json）
+# - actions  → CI 里用到的 GitHub Actions
+#
+# 说明：
+# 1. 更新 PR 不会自动合并 —— 依赖更新要人看一眼 changelog 再合。
+# 2. 需要给 PR 打标签的话，先在仓库里建好同名标签，再把 labels 字段加回来
+#    （例：["dependencies", "python"]）。
+# 3. 依赖更新可能影响费用计算（模型价格表在配置里，不在依赖里，但 SDK 升级可能改 token 统计口径）。
+
+version: 2
+
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5
+    # 一次只动一类东西，便于 review：把几个依赖放在同一个 PR 里会互相掩盖回归。
+    groups:
+      python-minor:
+        update-types: ["minor", "patch"]
+      python-major:
+        update-types: ["major"]
+
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5
+    groups:
+      web-minor:
+        update-types: ["minor", "patch"]
+      web-major:
+        update-types: ["major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5

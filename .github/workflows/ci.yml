@@ -1,0 +1,226 @@
+name: CI
+
+# booktran 的质量门禁。
+# 三个 job：
+#   python —— 3.11/3.12/3.13 矩阵：lint / 类型检查 / 单测 / 打包
+#   web    —— node 20：类型检查 / 单测 / 构建 / 设计反模式检测
+#   smoke  —— 端到端冒烟（假 provider，零成本、不需要 API key）
+#
+# 说明：ruff 用仓库自带的 pyproject.toml 配置（硬门禁）；mypy 仍以「可见的欠账」呈现。
+# `--isolated`（不读取任何项目配置）+ 最小规则集，避免"配置缺失"直接把 CI 弄红。
+
+on:
+  push:
+    # 默认分支名按仓库实际情况调整（main / master 都留着，避免漏跑）
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  NO_COLOR: "1"
+  BOOKTRAN_NO_PROGRESS: "1"
+
+jobs:
+  python:
+    name: python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 准备 Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 安装依赖
+        run: |
+          python -m pip install -U pip
+          pip install -e ".[pdf,zh,tok,mobi,test]"
+          pip install ruff mypy build
+
+      # ruff 用仓库自带配置（pyproject.toml [tool.ruff]）：语法错误 + 未定义名 +
+      # import 顺序 + 常见 bug 模式（闭包捕获循环变量、异常链缺失、可变默认值……）。
+      - name: ruff check（硬门禁）
+        run: ruff check .
+
+      # 格式基线：仓库尚未统一 ruff format 风格，暂不阻断。
+      # 跑一次 `ruff format .` 并提交后，把 continue-on-error 去掉。
+      - name: ruff format --check（格式基线）
+        continue-on-error: true
+        run: |
+          ruff format --check . || \
+            echo "::notice::ruff format 检查未通过：仓库尚未统一格式，暂不阻断 CI"
+
+      - name: 单元测试
+        run: pytest -q
+
+      # 类型检查：仓库还没有 mypy 配置，基线未清零，先当"可见的欠账"而不是门禁。
+      # 没装 mypy 就直接跳过。
+      - name: mypy（类型检查）
+        continue-on-error: true
+        run: |
+          if python -c "import mypy" 2>/dev/null; then
+            mypy src/booktran || echo "::notice::mypy 发现问题：类型基线未清零，暂不阻断 CI"
+          else
+            echo "::notice::未安装 mypy，跳过类型检查"
+          fi
+
+      # 打包：验证 wheel 能构建。wheel 里的前端产物由 web job 构建，
+      # 这里没有 dist 属于正常情况 —— 只提示，不失败。
+      - name: 构建 wheel 并检查前端产物
+        run: |
+          python -m build --wheel --outdir dist
+          python - <<'PY'
+          import glob
+          import zipfile
+          import sys
+
+          wheels = sorted(glob.glob("dist/*.whl"))
+          if not wheels:
+              print("::error::没有生成 wheel")
+              sys.exit(1)
+          names = zipfile.ZipFile(wheels[0]).namelist()
+          frontend = [n for n in names if n.startswith("booktran/web/dist/")]
+          if frontend:
+              print(f"wheel 内含前端产物 {len(frontend)} 个文件")
+          else:
+              print("::notice::wheel 内没有 booktran/web/dist：前端产物在 web job 里构建，"
+                    "本 job 不含前端产物属于正常情况（发布流水线会把 web job 的产物并入 wheel）")
+          PY
+
+  web:
+    name: web (node 20)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 准备 Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 安装依赖
+        working-directory: web
+        run: npm ci
+
+      - name: 类型检查
+        working-directory: web
+        run: npm run typecheck
+
+      - name: 单元测试
+        working-directory: web
+        run: npx vitest run
+
+      - name: 构建（产物落到 src/booktran/web/dist）
+        working-directory: web
+        run: npm run build
+
+      # 设计反模式门禁：advisory 级发现只列出、不阻断；
+      # 任何 primary finding（warning 级）都会让本 job 失败（工具退出码 2）。
+      # 想固定版本时改成 `npx --yes impeccable@<version> detect web/src --github`。
+      - name: 设计反模式检测
+        run: npx --yes impeccable detect web/src --github
+
+      - name: 上传前端产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: src/booktran/web/dist
+          if-no-files-found: error
+
+  smoke:
+    name: 端到端冒烟（假 provider）
+    needs: python
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 安装依赖
+        run: |
+          python -m pip install -U pip
+          pip install -e ".[pdf,zh,tok,mobi,test]"
+
+      # 示例书是仓库的一部分；如果这份 checkout 里没有，就用一段三段式的小文本兜底，
+      # 保证冒烟测试不依赖任何外部资源。
+      - name: 准备示例书
+        run: |
+          mkdir -p examples/sample-book
+          if [ ! -f examples/sample-book/sample.txt ]; then
+            cat > examples/sample-book/sample.txt <<'TXT'
+          第一章　试炼的开始
+
+          清晨的风穿过山谷，把火把上的余烬吹散成一片细小的星子。
+          少年握紧手里的木剑，知道从这一刻起，一切都要自己承担。
+
+          "你确定要走这条路吗？"身后的老人问。他没有回头，只是点了点头。
+
+          第二章　夜行
+
+          山路比他想象的更长。月亮升到头顶时，他仍在林间跋涉，
+          鞋底沾满了露水与松针。
+
+          第三章　归途
+
+          天亮时他站在河对岸，回头望去，山谷已经沉在雾里。
+          木剑还在手里，只是剑柄上多了两道浅浅的刻痕。
+          TXT
+          fi
+          test -f examples/sample-book/sample.txt
+
+      # 全链路：init → run → proofread → preview → export
+      # 全部走 --fake（假 provider）：零成本、不需要 API key。
+      - name: 全链路
+        run: |
+          set -euo pipefail
+          PROJ=/tmp/booktran-smoke
+          rm -rf "$PROJ"
+
+          booktran init examples/sample-book/sample.txt --dir "$PROJ" --fake \
+            --target-langs chinese_simplified
+
+          # 退出码 7 = 部分成功（可续跑），按 docs/ux/cli.md 的约定视为可接受。
+          rc=0
+          booktran run -p "$PROJ" --fake --yes || rc=$?
+          if [ "$rc" -ne 0 ] && [ "$rc" -ne 7 ]; then
+            echo "::error::booktran run 退出码 $rc（7 = 部分成功，可续跑）"
+            exit "$rc"
+          fi
+
+          booktran proofread -p "$PROJ" --fake
+          booktran preview  -p "$PROJ"
+          booktran export   -p "$PROJ" --bilingual
+
+      - name: 校验产物
+        run: |
+          set -euo pipefail
+          PROJ=/tmp/booktran-smoke
+
+          test -f "$PROJ/quality_report.json" || { echo "::error::缺少 quality_report.json"; exit 1; }
+          test -f "$PROJ/quality_report.md"    || { echo "::error::缺少 quality_report.md"; exit 1; }
+          ls "$PROJ"/artifacts/preview/*.html  >/dev/null || { echo "::error::缺少书页预览产物"; exit 1; }
+          ls "$PROJ"/output/*.txt              >/dev/null || { echo "::error::缺少译文导出"; exit 1; }
+          ls "$PROJ"/output/*_bilingual.txt    >/dev/null || { echo "::error::缺少双语导出"; exit 1; }
+
+          echo "产物齐备："
+          find "$PROJ" -maxdepth 2 -type f | sort
