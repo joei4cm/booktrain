@@ -459,7 +459,11 @@ export function Library(props: LibraryProps): JSX.Element {
       {!hasProjects ? (
         /* 空状态 = 教学：四步，只有第一步是主行动 */
         <div className="lib-empty">
+          <div className="lib-empty-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
           <h2 className="lib-empty-title">{t("library.title")}</h2>
+          <p className="lib-empty-hint">{t("library.dropHint")}</p>
           <ol className="lib-steps">
             <li className="lib-step">
               <span className="lib-step-num" aria-hidden="true">
