@@ -277,6 +277,7 @@ function ProfileForm(props: { profile: Profile | null; onCancel: () => void; onS
   const [model, setModel] = useState(profile?.model ?? "");
   const [baseUrl, setBaseUrl] = useState(profile?.base_url ?? "");
   const [keyEnv, setKeyEnv] = useState(profile?.key_env ?? "");
+  const [apiKey, setApiKey] = useState("");
   const [priceIn, setPriceIn] = useState(profile?.price_in ?? null);
   const [priceOut, setPriceOut] = useState(profile?.price_out ?? null);
   const [concurrency, setConcurrency] = useState(4);
@@ -298,7 +299,7 @@ function ProfileForm(props: { profile: Profile | null; onCancel: () => void; onS
     // 自动填充字段
     setProvider(tp.id === "anthropic" ? "anthropic" : tp.id === "openai" ? "openai" : "openai");
     setBaseUrl(tp.api);
-    setKeyEnv(tp.env[0] ?? "");
+    if (!keyEnv) setKeyEnv(tp.env[0] ?? "");
     setModel(tm.id);
     setPriceIn(tm.price_in);
     setPriceOut(tm.price_out);
@@ -310,7 +311,7 @@ function ProfileForm(props: { profile: Profile | null; onCancel: () => void; onS
 
   function submit() {
     if (!id.trim()) return;
-    onSubmit({ id: id.trim(), kind, provider, model: model.trim(), base_url: baseUrl.trim(), key_env: keyEnv.trim(), price_in: priceIn, price_out: priceOut, concurrency, caps: [], api_key: "", api_keys: [], rpm: 0, max_output_tokens: 8192, temperature: null, timeout: 300, max_retries: 4, prompt_preset: "default", price_cache_read: null, explicit: [], key_state: keyEnv.trim() ? `env:${keyEnv.trim()}` : "未找到" }, isNew);
+    onSubmit({ id: id.trim(), kind, provider, model: model.trim(), base_url: baseUrl.trim(), key_env: keyEnv.trim(), price_in: priceIn, price_out: priceOut, concurrency, caps: [], api_key: apiKey.trim(), api_keys: [], rpm: 0, max_output_tokens: 8192, temperature: null, timeout: 300, max_retries: 4, prompt_preset: "default", price_cache_read: null, explicit: [], key_state: apiKey.trim() ? "本地加密" : (keyEnv.trim() ? `env:${keyEnv.trim()}` : "未找到") }, isNew);
   }
 
   return (
@@ -341,7 +342,7 @@ function ProfileForm(props: { profile: Profile | null; onCancel: () => void; onS
           <div className="field"><label htmlFor="pf-provider">Provider</label><select id="pf-provider" value={provider} onChange={(e) => setProvider(e.target.value)}><option value="anthropic">Anthropic</option><option value="openai">OpenAI 兼容</option><option value="deepseek">DeepSeek</option><option value="ollama">Ollama（本地）</option><option value="vllm">vLLM（本地）</option><option value="fake">Fake（测试）</option></select></div>
           <div className="field"><label htmlFor="pf-model">模型名称</label><input id="pf-model" type="text" value={model} placeholder="如 claude-sonnet-4-5 / qwen2.5:7b" onChange={(e) => setModel(e.target.value)} /></div>
           <div className="field"><label htmlFor="pf-url">Base URL（留空用默认）</label><input id="pf-url" type="text" value={baseUrl} placeholder="https://api.example.com/v1" onChange={(e) => setBaseUrl(e.target.value)} /></div>
-          <div className="field"><label htmlFor="pf-key">密钥来源（环境变量名）</label><input id="pf-key" type="text" value={keyEnv} placeholder="如 ANTHROPIC_API_KEY" onChange={(e) => setKeyEnv(e.target.value)} /></div>
+          <div className="field" style={{gridColumn:"1 / -1"}}><label htmlFor="pf-key">API Key（加密存储在本地，不写入环境变量）</label><input id="pf-key" type="password" value={apiKey} placeholder="sk-..." onChange={(e) => setApiKey(e.target.value)} autoComplete="off" /></div>
           <div className="field"><label htmlFor="pf-price-in">输入价格（$/Mtok，留空=未知）</label><input id="pf-price-in" type="number" min="0" step="0.01" value={priceIn ?? ""} placeholder="3.0" onChange={(e) => setPriceIn(e.target.value ? Number(e.target.value) : null)} /></div>
           <div className="field"><label htmlFor="pf-price-out">输出价格（$/Mtok，留空=未知）</label><input id="pf-price-out" type="number" min="0" step="0.01" value={priceOut ?? ""} placeholder="15.0" onChange={(e) => setPriceOut(e.target.value ? Number(e.target.value) : null)} /></div>
           <div className="field"><label htmlFor="pf-conc">并发数</label><input id="pf-conc" type="number" min="1" max="64" value={concurrency} onChange={(e) => setConcurrency(Number(e.target.value) || 4)} /></div>

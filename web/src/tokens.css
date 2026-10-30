@@ -1,37 +1,34 @@
-/* ── 校样稿纸设计令牌 ──────────────────────────────────────
-   世界：印刷厂校样稿纸——暖白纸面、蓝黑墨水、编辑蓝笔、红笔纠错、铅笔灰待定。
-   颜色策略：Restrained（中性灰 + 一个靛蓝强调色 + 完整状态语义色）。
-   靛蓝承担「校对批注 / 选中 / 主行动」；状态色不复用靛蓝。 */
+/* ── 设计令牌：校样稿纸（galley proof） ── */
 
 :root {
   /* 表面 */
-  --desk: #eceae5;          /* 桌面：暖灰 */
-  --surface: #f8f7f4;       /* 面板：微暖白 */
-  --paper: #fffefb;         /* 书页：暖白纸 */
+  --desk: #f0efec;
+  --surface: #ffffff;
+  --paper: #fffefb;
 
   /* 文字 */
-  --ink: #1c1f26;           /* 蓝黑墨水 */
+  --ink: #1a1d23;
   --ink-2: #3d4250;
   --ink-3: #6b7280;
 
   /* 线 */
-  --line: #ddd9d2;
-  --line-strong: #c8c3ba;
+  --line: #e5e3de;
+  --line-strong: #d0cdc6;
 
-  /* 强调（编辑蓝笔） */
-  --accent: #2c5aa0;
-  --accent-strong: #23477f;
-  --accent-soft: #eef1f8;
+  /* 强调（编辑蓝） */
+  --accent: #3b6fb5;
+  --accent-strong: #2d5a99;
+  --accent-soft: #eef3fa;
 
   /* 状态 */
-  --danger: #b42318;
-  --danger-soft: #fdf3f2;
-  --warn: #b54708;
-  --warn-soft: #fdf6ec;
-  --ok: #027a48;
-  --ok-soft: #eff8f3;
+  --danger: #d92d20;
+  --danger-soft: #fef3f2;
+  --warn: #dc6803;
+  --warn-soft: #fffaeb;
+  --ok: #039855;
+  --ok-soft: #ecfdf3;
 
-  /* 字号（固定台阶） */
+  /* 字号 */
   --text-xs: 11px;
   --text-sm: 12px;
   --text-base: 13px;
@@ -40,18 +37,19 @@
   --text-xl: 22px;
   --text-book: 18px;
 
-  /* 间距（4px 基数） */
-  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
+  /* 间距 */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px;
   --s5: 20px; --s6: 24px; --s8: 32px; --s12: 48px;
 
   /* 圆角 */
-  --r-control: 3px;
-  --r-panel: 6px;
+  --r-control: 6px;
+  --r-panel: 10px;
   --r-pill: 999px;
 
   /* 阴影 */
-  --shadow-panel: 0 1px 2px rgba(28,31,38,.05), 0 2px 8px rgba(28,31,38,.06);
-  --shadow-paper: 0 1px 3px rgba(28,31,38,.08), 0 12px 40px rgba(28,31,38,.12);
+  --shadow-panel: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-paper: 0 2px 8px rgba(0,0,0,.08), 0 12px 40px rgba(0,0,0,.12);
+  --shadow-pop: 0 4px 24px rgba(0,0,0,.12), 0 12px 48px rgba(0,0,0,.08);
 
   /* 动效 */
   --t-micro: 120ms;
@@ -74,33 +72,46 @@ body {
   margin: 0;
   background: var(--desk);
   color: var(--ink);
-  font: var(--text-base) / 1.5 var(--font-ui);
+  font: var(--text-base) / 1.6 var(--font-ui);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 button, input, select, textarea { font: inherit; color: inherit; }
 
 button {
-  padding: 4px 10px;
+  padding: 6px 14px;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-control);
   background: var(--surface);
   cursor: pointer;
-  transition: background var(--t-micro) var(--ease), border-color var(--t-micro) var(--ease);
+  transition: all var(--t-micro) var(--ease);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  line-height: 1.4;
 }
-button:hover:not(:disabled) { background: var(--desk); border-color: var(--ink-3); }
-button:disabled { opacity: .45; cursor: not-allowed; }
+button:hover:not(:disabled) {
+  background: var(--desk);
+  border-color: var(--ink-3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,.08);
+}
+button:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
+button:disabled { opacity: .4; cursor: not-allowed; }
 
 button.primary {
   background: var(--ink);
   border-color: var(--ink);
-  color: var(--paper);
-  font-weight: 500;
+  color: #fff;
+  font-weight: 600;
 }
-button.primary:hover:not(:disabled) { background: var(--ink-2); border-color: var(--ink-2); }
+button.primary:hover:not(:disabled) {
+  background: var(--ink-2);
+  border-color: var(--ink-2);
+}
 
 button.ghost { border-color: transparent; background: transparent; }
-button.ghost:hover:not(:disabled) { background: var(--desk); border-color: var(--line); }
+button.ghost:hover:not(:disabled) { background: var(--desk); border-color: var(--line); transform: none; box-shadow: none; }
 button.danger { color: var(--danger); }
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
@@ -109,21 +120,22 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 input[type="text"], input[type="number"], input[type="password"], select, textarea {
-  padding: 4px 8px;
+  padding: 6px 10px;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-control);
   background: var(--paper);
+  transition: border-color var(--t-micro) var(--ease), box-shadow var(--t-micro) var(--ease);
 }
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-soft);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
 th {
   text-align: left;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-bottom: 2px solid var(--ink);
   font-weight: 600;
   font-size: var(--text-xs);
@@ -132,37 +144,40 @@ th {
   letter-spacing: .04em;
   white-space: nowrap;
 }
-td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
 tr:hover td { background: var(--surface); }
 
 .mono { font-family: var(--font-mono); font-size: var(--text-sm); }
 .num { font-variant-numeric: tabular-nums; }
 .muted { color: var(--ink-3); }
-.hint { color: var(--ink-3); font-size: var(--text-sm); margin: var(--s1) 0 var(--s3); }
+.hint { color: var(--ink-3); font-size: var(--text-sm); margin: var(--s1) 0 var(--s3); line-height: 1.5; }
 
 .tag {
-  display: inline-block;
-  padding: 1px 7px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
   border-radius: var(--r-pill);
   font-size: var(--text-xs);
   font-weight: 500;
   border: 1px solid transparent;
   white-space: nowrap;
+  line-height: 1.4;
 }
-.tag.ok   { color: var(--ok);    background: var(--ok-soft);    border-color: rgba(2,122,72,.2); }
-.tag.err  { color: var(--danger); background: var(--danger-soft); border-color: rgba(180,35,24,.2); }
-.tag.warn { color: var(--warn);   background: var(--warn-soft);   border-color: rgba(181,71,8,.2); }
-.tag.acc  { color: var(--accent); background: var(--accent-soft); border-color: rgba(44,90,160,.2); }
+.tag.ok   { color: var(--ok);    background: var(--ok-soft);    border-color: rgba(3,152,85,.2); }
+.tag.err  { color: var(--danger); background: var(--danger-soft); border-color: rgba(217,45,32,.2); }
+.tag.warn { color: var(--warn);   background: var(--warn-soft);   border-color: rgba(220,104,3,.2); }
+.tag.acc  { color: var(--accent); background: var(--accent-soft); border-color: rgba(59,111,181,.2); }
 
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-panel);
+  box-shadow: var(--shadow-panel);
 }
 
 .row { display: flex; gap: var(--s2); align-items: center; flex-wrap: wrap; }
 .field { margin: var(--s2) 0; }
-.field label { display: block; font-size: var(--text-xs); color: var(--ink-3); margin-bottom: 2px; font-weight: 600; }
+.field label { display: block; font-size: var(--text-xs); color: var(--ink-3); margin-bottom: 3px; font-weight: 600; }
 .field input, .field select, .field textarea { width: 100%; }
 .scroll { overflow: auto; }
 
