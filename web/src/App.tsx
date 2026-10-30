@@ -252,10 +252,22 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>booktran</h1>
+        <span className="brand">book<span>tran</span></span>
+        <nav className="topnav" aria-label="主导航">
+          {navItems.map((n) => (
+            <button
+              key={n.id}
+              onClick={() => setRoute(n.id)}
+              aria-current={route === n.id ? "page" : undefined}
+            >
+              {n.icon}
+              {n.label}
+            </button>
+          ))}
+        </nav>
         {project && (
-          <span className="muted">
-            {project.id} · {project.target_langs.join(" / ")}
+          <span className="muted" style={{fontSize: "var(--fs-sm)"}}>
+            {project.id}
           </span>
         )}
         <span className="grow" />
@@ -284,19 +296,6 @@ export default function App() {
       </header>
 
       <div className="body">
-        <nav className="nav" aria-label="主导航">
-          {navItems.map((n) => (
-            <button
-              key={n.id}
-              onClick={() => setRoute(n.id)}
-              aria-current={route === n.id ? "page" : undefined}
-            >
-              {n.icon}
-              {n.label}
-            </button>
-          ))}
-        </nav>
-
         <main className="main">
           {route === "library" && (
             <Library
